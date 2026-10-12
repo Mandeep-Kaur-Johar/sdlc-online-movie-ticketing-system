@@ -1,0 +1,12 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart LR
+    Moviegoer(["Moviegoer"]) --> Browse["Browse movies and showtimes"]
+    Browse --> SelectSeats["Select seats on seat map"]
+    SelectSeats --> HoldSeats["Hold seats with countdown"]
+    HoldSeats --> Quote["Review itemised order quote"]
+    Quote --> Pay["Pay via hosted payment fields"]
+    Pay --> Confirm["Confirm booking on signed webhook"]
+    Confirm --> IssueTicket["Issue QR e-ticket"]
+    IssueTicket --> GateValidation["Validate e-ticket at cinema gate"]
+    HoldSeats -.->|Hold expires| ReleaseSeats["Release seats back to sale"]
+    Confirm -.->|Customer cancels| Refund["Cancel booking and initiate refund"]

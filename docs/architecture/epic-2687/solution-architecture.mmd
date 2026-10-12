@@ -1,0 +1,34 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart TB
+    subgraph Client["Client Tier"]
+        TicketingWeb["Movie Ticketing Web App"]
+    end
+    subgraph API["Application Tier (.NET 8 Web API)"]
+        AuthMiddleware["JWT Authentication and RBAC Middleware"]
+        CatalogueService["Catalogue Service"]
+        SeatHoldService["Seat Hold Service"]
+        PricingService["Pricing Service"]
+        PaymentService["Payment Service"]
+        TicketService["Ticket Service"]
+        BookingService["Booking Service"]
+        HoldExpiryWorker["Hold Expiry Worker"]
+    end
+    subgraph Data["Data Tier"]
+        TicketingDB[("Ticketing Database")]
+    end
+    PaymentGateway(["Payment Gateway"])
+    EmailService(["Email Service"])
+    TicketingWeb -->|HTTPS JSON| AuthMiddleware
+    AuthMiddleware --> CatalogueService
+    AuthMiddleware --> SeatHoldService
+    AuthMiddleware --> PricingService
+    AuthMiddleware --> PaymentService
+    AuthMiddleware --> TicketService
+    AuthMiddleware --> BookingService
+    CatalogueService -->|SQL| TicketingDB
+    SeatHoldService -->|SQL| TicketingDB
+    PricingService -->|SQL| TicketingDB
+    BookingService -->|SQL| TicketingDB
+    PaymentService -->|HTTPS| PaymentGateway
+    TicketService -->|Send e-ticket| EmailService
+    HoldExpiryWorker -->|SQL| TicketingDB

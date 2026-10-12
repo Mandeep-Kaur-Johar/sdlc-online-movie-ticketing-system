@@ -1,0 +1,14 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart LR
+    Developer(["Developer"]) -->|Push feature branch| GitHubRepo["GitHub Repository"]
+    GitHubRepo -->|Pull request| BuildStage["Build and Unit Test"]
+    BuildStage --> CodeQuality["Static Analysis and Code Coverage Gate"]
+    CodeQuality --> SecurityScan["Dependency and Secret Scan"]
+    SecurityScan --> PackageStage["Package Artifacts"]
+    PackageStage --> DeployDev["Deploy to Dev"]
+    DeployDev --> IntegrationTest["Integration and API Tests"]
+    IntegrationTest --> DeployTest["Deploy to Test"]
+    DeployTest --> UATGate["UAT Approval Gate"]
+    UATGate --> DeployProd["Deploy to Production"]
+    DeployProd --> SmokeTest["Smoke Tests and Health Probe"]
+    SmokeTest -.->|Failure| Rollback["Rollback to Previous Slot"]
