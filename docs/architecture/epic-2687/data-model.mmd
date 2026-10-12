@@ -1,0 +1,126 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+erDiagram
+    USER {
+        guid userId PK
+        string email
+        string passwordHash
+        string fullName
+        string phone
+        string roles
+        datetime createdUtc
+        string status
+    }
+    MOVIE {
+        guid movieId PK
+        string title
+        string synopsis
+        int durationMinutes
+        string certification
+        string genres
+        string languages
+        string posterUrl
+        date releaseDate
+        string status
+    }
+    CINEMA {
+        guid cinemaId PK
+        string name
+        string cityId
+        string address
+    }
+    SCREEN {
+        guid screenId PK
+        guid cinemaId FK
+        string name
+        int totalSeats
+    }
+    SHOW {
+        guid showId PK
+        guid movieId FK
+        guid cinemaId FK
+        guid screenId FK
+        datetime startUtc
+        datetime endUtc
+        string format
+        decimal basePrice
+        int availableSeatCount
+        string status
+    }
+    SHOWPRICING {
+        guid showPricingId PK
+        guid showId FK
+        string category
+        decimal price
+        string currency
+    }
+    SEAT {
+        guid seatId PK
+        guid screenId FK
+        string rowLabel
+        int seatNumber
+        string category
+        bool isAccessible
+    }
+    SEATHOLD {
+        guid holdId PK
+        guid showId FK
+        guid userId FK
+        datetime createdUtc
+        datetime expiresUtc
+        string status
+    }
+    BOOKING {
+        guid bookingId PK
+        string bookingReference
+        guid userId FK
+        guid showId FK
+        decimal amountPaid
+        string status
+        datetime createdUtc
+    }
+    PAYMENT {
+        guid paymentId PK
+        guid bookingId FK
+        string gatewayReference
+        decimal amount
+        string currency
+        string status
+        datetime processedUtc
+    }
+    TICKET {
+        guid ticketId PK
+        guid bookingId FK
+        string qrPayload
+        datetime issuedUtc
+        string status
+    }
+    REFUND {
+        guid refundId PK
+        guid bookingId FK
+        decimal amount
+        string status
+        string gatewayReference
+        datetime requestedUtc
+    }
+    AUDITLOG {
+        guid auditId PK
+        string entityType
+        string entityId
+        string action
+        guid actorUserId
+        string correlationId
+        datetime occurredUtc
+    }
+    CINEMA ||--o{ SCREEN : "has"
+    SCREEN ||--o{ SEAT : "contains"
+    SCREEN ||--o{ SHOW : "hosts"
+    MOVIE ||--o{ SHOW : "is screened as"
+    SHOW ||--o{ SHOWPRICING : "priced by"
+    SHOW ||--o{ SEATHOLD : "holds seats for"
+    USER ||--o{ SEATHOLD : "creates"
+    USER ||--o{ BOOKING : "places"
+    SHOW ||--o{ BOOKING : "is booked in"
+    BOOKING ||--|| PAYMENT : "paid by"
+    BOOKING ||--o{ TICKET : "issues"
+    BOOKING ||--o{ REFUND : "refunded by"
+    USER ||--o{ AUDITLOG : "acts in"

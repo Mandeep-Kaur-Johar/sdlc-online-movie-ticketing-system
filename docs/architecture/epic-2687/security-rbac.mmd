@@ -1,0 +1,15 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart TB
+    Moviegoer(["Moviegoer"]) --> AuthMiddleware["JWT Authentication and RBAC Middleware"]
+    OpsManager(["Cinema Operations Manager"]) --> AuthMiddleware
+    GateAttendant(["Gate Attendant"]) --> AuthMiddleware
+    AuthMiddleware -->|Role Moviegoer| CustomerEndpoints["Holds, Orders, Payments, Bookings, Tickets"]
+    AuthMiddleware -->|Role Operations| AdminEndpoints["Admin Movies, Shows, Pricing"]
+    AuthMiddleware -->|Role GateAttendant| GateEndpoints["Gate Ticket Validation"]
+    AuthMiddleware -->|Anonymous| PublicEndpoints["Movie Catalogue and Showtimes"]
+    CustomerEndpoints -->|Ownership check on userId claim| TicketingDB[("Ticketing Database")]
+    AdminEndpoints -->|Deny by default| TicketingDB
+    GateEndpoints -->|Scan attempts logged| TicketingDB
+    PublicEndpoints -->|Read only| TicketingDB
+    AuthMiddleware -.->|Secrets and signing keys| KeyVault["Azure Key Vault"]
+    AuthMiddleware -.->|Authorization failures| AuditLog["Audit Log and Application Insights"]

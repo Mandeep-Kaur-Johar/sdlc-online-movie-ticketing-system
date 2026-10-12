@@ -1,0 +1,29 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart TB
+    Users(["Moviegoers, Operations Staff, Gate Attendants"])
+    subgraph Azure["Azure Subscription"]
+        FrontDoor["Azure Front Door and WAF"]
+        subgraph AppPlatform["Azure App Service"]
+            TicketingWeb["Movie Ticketing Web App"]
+            TicketingAPI["Movie Ticketing API"]
+            HoldExpiryWorker["Hold Expiry Worker"]
+        end
+        TicketingDB[("Azure SQL Database")]
+        Cache[("Azure Cache for Redis")]
+        KeyVault["Azure Key Vault"]
+        AppInsights["Application Insights"]
+        LogAnalytics["Log Analytics"]
+    end
+    PaymentGateway(["Payment Gateway"])
+    EmailService(["Email Service"])
+    Users -->|HTTPS| FrontDoor
+    FrontDoor -->|HTTPS| TicketingWeb
+    TicketingWeb -->|HTTPS JSON| TicketingAPI
+    TicketingAPI -->|TDS SQL| TicketingDB
+    TicketingAPI -->|Seat map cache| Cache
+    HoldExpiryWorker -->|TDS SQL| TicketingDB
+    TicketingAPI -->|Fetch secrets| KeyVault
+    TicketingAPI -->|HTTPS| PaymentGateway
+    TicketingAPI -->|HTTPS| EmailService
+    TicketingAPI -.->|Telemetry| AppInsights
+    AppInsights --> LogAnalytics

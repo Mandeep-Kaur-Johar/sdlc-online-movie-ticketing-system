@@ -1,0 +1,25 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+sequenceDiagram
+    autonumber
+    actor Moviegoer
+    participant TicketingWeb as Movie Ticketing Web App
+    participant TicketingAPI as Movie Ticketing API
+    participant TicketingDB as Ticketing Database
+    participant PaymentGateway as Payment Gateway
+    participant EmailService as Email Service
+    Moviegoer->>TicketingWeb: Select seats on seat map
+    TicketingWeb->>TicketingAPI: POST /api/v1/shows/{showId}/holds (JWT)
+    TicketingAPI->>TicketingDB: Insert SeatHold in transaction
+    TicketingDB-->>TicketingAPI: holdId and expiresUtc
+    TicketingAPI-->>TicketingWeb: HTTP 201 hold created
+    TicketingWeb->>TicketingAPI: POST /api/v1/orders/quote (holdId)
+    TicketingAPI-->>TicketingWeb: Price breakdown with grand total
+    TicketingWeb->>TicketingAPI: POST /api/v1/payments/intent
+    TicketingAPI->>PaymentGateway: Create payment intent
+    PaymentGateway-->>TicketingWeb: Hosted payment fields
+    Moviegoer->>PaymentGateway: Submit card details
+    PaymentGateway-->>TicketingAPI: Signed webhook payment succeeded
+    TicketingAPI->>TicketingDB: Confirm Booking, mark seats booked, hold Converted
+    TicketingAPI->>EmailService: Dispatch QR e-ticket
+    TicketingAPI-->>TicketingWeb: Booking reference and QR ticket
+    TicketingWeb-->>Moviegoer: Confirmation page with e-ticket

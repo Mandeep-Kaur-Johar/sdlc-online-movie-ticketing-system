@@ -1,0 +1,11 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart TB
+    Moviegoer(["Moviegoer"]) -->|HTTPS| TicketingWeb["Movie Ticketing Web App"]
+    OpsManager(["Cinema Operations Manager"]) -->|HTTPS| TicketingWeb
+    GateAttendant(["Gate Attendant"]) -->|HTTPS| TicketingWeb
+    TicketingWeb -->|HTTPS JSON| TicketingAPI["Movie Ticketing API"]
+    TicketingAPI -->|SQL| TicketingDB[("Ticketing Database")]
+    TicketingAPI -->|HTTPS payment intent| PaymentGateway(["Payment Gateway"])
+    PaymentGateway -.->|Signed webhook| TicketingAPI
+    TicketingAPI -->|SMTP or API| EmailService(["Email Service"])
+    TicketingAPI -.->|Telemetry| Observability(["Application Insights"])

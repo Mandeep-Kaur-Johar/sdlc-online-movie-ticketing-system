@@ -1,0 +1,39 @@
+%%{init: {"theme":"default","securityLevel":"loose","flowchart":{"htmlLabels":true,"curve":"linear"}} }%%
+flowchart LR
+    subgraph Frontend["React 18 TypeScript Frontend"]
+        MovieListPage["Movie List Page"]
+        MovieDetailPage["Movie Detail Page"]
+        SeatMapComponent["Seat Map Component"]
+        CheckoutPage["Checkout Page"]
+        MyBookingsPage["My Bookings Page"]
+        AdminConsole["Admin Console"]
+        ScannerView["Gate Scanner View"]
+    end
+    subgraph Backend["ASP.NET Core Controllers and Services"]
+        MoviesController["Movies Controller"]
+        ShowsController["Shows Controller"]
+        HoldsController["Holds Controller"]
+        OrdersController["Orders Controller"]
+        PaymentsController["Payments Controller"]
+        BookingsController["Bookings Controller"]
+        AdminController["Admin Controller"]
+        GateController["Gate Controller"]
+    end
+    TicketingDB[("Ticketing Database")]
+    MovieListPage -->|GET /api/v1/movies| MoviesController
+    MovieDetailPage -->|GET /api/v1/shows| ShowsController
+    SeatMapComponent -->|GET /api/v1/shows/id/seats| ShowsController
+    SeatMapComponent -->|POST /api/v1/shows/id/holds| HoldsController
+    CheckoutPage -->|POST /api/v1/orders/quote| OrdersController
+    CheckoutPage -->|POST /api/v1/payments/intent| PaymentsController
+    MyBookingsPage -->|GET /api/v1/bookings| BookingsController
+    AdminConsole -->|POST PUT DELETE /api/v1/admin| AdminController
+    ScannerView -->|POST /api/v1/gate/tickets/validate| GateController
+    MoviesController -->|SQL| TicketingDB
+    ShowsController -->|SQL| TicketingDB
+    HoldsController -->|SQL| TicketingDB
+    OrdersController -->|SQL| TicketingDB
+    PaymentsController -->|SQL| TicketingDB
+    BookingsController -->|SQL| TicketingDB
+    AdminController -->|SQL| TicketingDB
+    GateController -->|SQL| TicketingDB
